@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html class="no-js">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<title>jQuery Data-Binding | Use .on() .off() and .trigger()</title>
+		<meta name="description" content="jQuery Data-Binding">
+		<meta name="viewport" content="width=device-width">
+
+		<link href='http://fonts.googleapis.com/css?family=Patua+One' rel='stylesheet' type='text/css'>
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+		
+		<!-- Extra Strength Responsive Grids https://github.com/dfcb/extra-strength-responsive-grids -->
+		<link rel="stylesheet" href="css/prism.css" />
+		<link rel="stylesheet" href="css/main.css">
+
+	</head>
+	<body>
+		<div class="wrapper">
+			<header>
+				<div class="block">
+					<h1>jQuery Data Binding</h1>
+					<h2>Use <code>.on()</code> <code>.off()</code> and <code>.trigger()</code> on data objects.</h2>
+				</div>
+				<div class="block">
+					<p><em>by <a href="http://johnpolacek.com" target="_blank">John Polacek</a></em></p>
+					<div class="follow-btn">
+						<iframe scrolling="no" frameborder="0" allowtransparency="true" src="http://platform.twitter.com/widgets/follow_button.1347008535.html#_=1347293944835&amp;id=twitter-widget-0&amp;lang=en&amp;screen_name=johnpolacek&amp;show_count=false&amp;show_screen_name=true&amp;size=l" class="twitter-follow-button" style="width: 169px; height: 28px;" title="Twitter Follow Button" data-twttr-rendered="true"></iframe>
+					</div>
+				</div>
+			</header>
+
+			<a href="https://github.com/johnpolacek/imagefill.js/"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>
+
+			<div class="block">
+				<p>This is a simple way to use jQuery event handling inside objects for data binding, Observer, Pub/Sub stuff. Just use the classic module pattern built on top of an empty jQuery Object.</p>
+				<p>Here’s a simple example and some code:</p>
+			</div>
+
+			<div class="block example">
+				<h3>Simple Example</h3>
+				<button id="button">Attempt to be cool</button>
+				<h4>Cool factor</h4>
+				<h4 class="text-big" id="status">0</h4>
+				<div id="output"></div>	
+			</div>
+
+			<div class="block">
+				<p>To create a data or app object with jQuery-style event handling, extend an empty jQuery object.</p>
+			</div>
+
+			<div class="block">
+				<pre>
+					<code class="language-javascript">
+	var dataObj = $.extend($({}),(function(o) {
+
+		// Private Things
+		var coolFactor = 0;
+
+		function isCoolStuff(stuff) {
+			return stuff.indexOf('cool') != -1;
+		}
+
+		// Public Things
+		o.doStuff = function(stuff) {
+			if (isCoolStuff(stuff)) {
+				coolFactor++;
+				o.trigger('did.it',[{done:stuff, status:coolFactor}]);
+			} else {
+				--coolFactor; // we only do cool stuff!
+				o.trigger('did.nothing',[{status:coolFactor}]);
+			}
+		};
+
+		return o;
+
+	})($({})));
+					</code>
+				</pre>
+			</div>
+
+			<p>Then you can define triggers and event handlers for passing data to and from your data object and the DOM. Basically this is like building your own tiny custom <a href="https://angularjs.org/">Angular.js</a> type thing.</p>
+
+			<div class="block">
+				<pre>
+					<code class="language-javascript">
+	// DOM event handlers
+	$('#button').on('click',function() {
+		dataObj.doStuff(Math.random() > 0.4 ? 'cool stuff' : 'boring stuff');
+	});
+
+	// Data event handlers with chaining and namespaces (thanks jQuery)
+	dataObj
+		.on('did.it',function(e, data) {
+			$('#output').prepend('<p>We did '+data.done+'. <small>(+1)</small></p>');
+		})
+		.on('did.nothing',function() {
+			$('#output').prepend('<p>We did nothing. <small>(-1)</small></p>');
+		})
+		.on('did.it did.nothing',function(e, data){
+			$('#status').text(data.status);
+		});
+					</code>
+				</pre>
+			</div>
+			
+			<div class="block">
+				<h3>Other Approaches</h3>
+				<ul>
+					<li><strong><a href="http://www.lucaongaro.eu/blog/2012/12/02/easy-two-way-data-binding-in-javascript/">Easy Two-Way Data Binding in JavaScript</a> by Luca Ongaro</strong></li>
+					<li><strong><a href="http://benhowdle.im/2012/12/03/using-jquery-custom-events-in-your-object-literal-and-observer-pattern-applications/">Using jQuery custom events in your Object Literal and Observer Pattern applications</a> by Ben Howdle</strong></li>
+				</ul>
+			</div>
+
+		</div><!-- /.wrapper -->
+
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+		<script src="js/prism.js"></script>
+		<script src="js/example.js"></script>
+
+		<script>
+			var _gaq=[['_setAccount','UA-2821890-9'],['_trackPageview']];
+			(function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+			g.src='//www.google-analytics.com/ga.js';
+			s.parentNode.insertBefore(g,s)}(document,'script'));
+		</script>
+	</body>
+</html>
